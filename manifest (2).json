@@ -1,0 +1,16 @@
+{
+  "background_color": "#ffd000",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "clement310103.github",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "clement310103.github",
+  "start_url": "https://clement310103.github.io/calendario-evaluaciones/",
+  "theme_color": "#ffffff",
+  "lang": "es",
+  "categories": [
+    "education",
+    "utilities"
+  ]
+}
