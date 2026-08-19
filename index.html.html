@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Calendario de Evaluaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16233D;
+    --ink-soft:#3B4A66;
+    --parchment:#F4EEE0;
+    --parchment-deep:#E9E0CB;
+    --seal:#8B2620;
+    --seal-dim:#B96A5F;
+    --gold:#A9823E;
+    --paper-line: rgba(22,35,61,0.14);
+    --muted:#6B7280;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(169,130,62,0.10), transparent 60%),
+      var(--parchment);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:28px 18px 10px;
+  }
+  header{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:16px;
+    margin-bottom:22px;
+    position:relative;
+  }
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--seal);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size:clamp(28px,7vw,38px);
+    line-height:1.05;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .sub{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  #today-line{font-variant-numeric:tabular-nums;}
+
+  .section-label{
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:26px 4px 10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .section-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--paper-line);
+  }
+
+  .card{
+    position:relative;
+    background:linear-gradient(180deg, #FBF7EC, #F6F0DF);
+    border:1px solid var(--paper-line);
+    border-left:3px solid var(--ink);
+    border-radius:2px;
+    padding:16px 16px 16px 18px;
+    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    box-shadow:0 1px 0 rgba(22,35,61,0.05);
+  }
+  .card.done{ opacity:.55; border-left-color:var(--muted); }
+  .card.urgent{ border-left-color:var(--seal); }
+
+  .card-main{ flex:1; min-width:0; }
+  .ramo{
+    font-size:10.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+    margin-bottom:3px;
+  }
+  .tipo{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:17px;
+    color:var(--ink);
+    line-height:1.2;
+    margin-bottom:4px;
+  }
+  .fecha{
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .nota{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:3px;
+    font-style:italic;
+  }
+
+  .stamp{
+    flex-shrink:0;
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    border:2px solid var(--seal);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    transform:rotate(-6deg);
+    background:
+      repeating-radial-gradient(circle at 50% 50%, transparent 0 2px, rgba(139,38,32,0.05) 2px 3px);
+    color:var(--seal);
+  }
+  .card.done .stamp{
+    border-color:var(--muted);
+    color:var(--muted);
+    transform:rotate(-6deg) scale(.96);
+  }
+  .card.urgent .stamp{
+    background:var(--seal);
+    color:var(--parchment);
+  }
+  .stamp .n{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:20px;
+    line-height:1;
+  }
+  .stamp .u{
+    font-size:8px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-top:2px;
+  }
+
+  .tbc-card{
+    background:transparent;
+    border:1px dashed var(--paper-line);
+    border-left:1px dashed var(--paper-line);
+  }
+  .tbc-card .stamp{
+    border-style:dashed;
+    background:none;
+  }
+
+  footer{
+    text-align:center;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:30px;
+    padding:0 20px;
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .card{ transition: transform .15s ease; }
+    .card:active{ transform: scale(.99); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Semestre 2026 · 2</div>
+    <h1>Calendario de Evaluaciones</h1>
+    <div class="sub">
+      <span id="today-line"></span>
+      <span id="count-line"></span>
+    </div>
+  </header>
+
+  <div class="section-label">Próximas</div>
+  <div id="upcoming"></div>
+
+  <div class="section-label" id="past-label" style="display:none;">Rendidas</div>
+  <div id="past"></div>
+
+  <div class="section-label" id="tbc-label" style="display:none;">Fechas por confirmar</div>
+  <div id="tbc"></div>
+
+  <footer>Se actualiza automáticamente cada vez que abres esta página · Agrégala a tu pantalla de inicio para usarla como app</footer>
+</div>
+
+<script>
+  // year assumed 2026 (Sep–Dec, following today = 19 Aug 2026)
+  const Y = 2026;
+  const events = [
+    // Derecho Constitucional Económico
+    {ramo:"Derecho Constitucional Económico", tipo:"Parcial", date:"2026-10-22"},
+    {ramo:"Derecho Constitucional Económico", tipo:"Rezago parcial", date:"2026-11-09"},
+    {ramo:"Derecho Constitucional Económico", tipo:"Examen final", date:"2026-12-02"},
+    {ramo:"Derecho Constitucional Económico", tipo:"Rezago examen", date:"2026-12-16"},
+
+    // Taller Integrado de Resolución de Casos
+    {ramo:"Taller Integrado de Resolución de Casos", tipo:"Parcial oral (día 1)", date:"2026-09-28"},
+    {ramo:"Taller Integrado de Resolución de Casos", tipo:"Parcial oral (día 2)", date:"2026-10-01"},
+    {ramo:"Taller Integrado de Resolución de Casos", tipo:"Rezago parcial", date:null},
+    {ramo:"Taller Integrado de Resolución de Casos", tipo:"Evaluación final (entrega escrita)", date:"2026-12-03"},
+    {ramo:"Taller Integrado de Resolución de Casos", tipo:"Rezago examen", date:null},
+
+    // Derecho Canónico Matrimonial
+    {ramo:"Derecho Canónico Matrimonial", tipo:"Parcial", date:"2026-10-21"},
+    {ramo:"Derecho Canónico Matrimonial", tipo:"Rezago parcial", date:"2026-11-10"},
+    {ramo:"Derecho Canónico Matrimonial", tipo:"Examen final", date:"2026-12-09"},
+    {ramo:"Derecho Canónico Matrimonial", tipo:"Rezago examen", date:"2026-12-16"},
+
+    // Derecho Internacional Privado (Grob)
+    {ramo:"Derecho Internacional Privado (Grob)", tipo:"Parcial", date:"2026-10-19"},
+    {ramo:"Derecho Internacional Privado (Grob)", tipo:"Rezago parcial", date:"2026-11-10"},
+    {ramo:"Derecho Internacional Privado (Grob)", tipo:"Examen final", date:"2026-12-02"},
+    {ramo:"Derecho Internacional Privado (Grob)", tipo:"Rezago examen", date:"2026-12-16"},
+
+    // ¿Por qué la Revolución?
+    {ramo:"¿Por qué la Revolución?", tipo:"Parcial", date:"2026-10-26"},
+    {ramo:"¿Por qué la Revolución?", tipo:"Rezago parcial", date:"2026-11-10"},
+    {ramo:"¿Por qué la Revolución?", tipo:"Examen final", date:"2026-11-20"},
+    {ramo:"¿Por qué la Revolución?", tipo:"Rezago examen", date:"2026-12-18"},
+  ];
+
+  const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+
+  function fmt(dateStr){
+    const [y,m,d] = dateStr.split("-").map(Number);
+    return `${d} ${MESES[m-1]}. ${y}`;
+  }
+
+  function daysUntil(dateStr){
+    const now = new Date();
+    const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const [y,m,d] = dateStr.split("-").map(Number);
+    const target = new Date(y, m-1, d);
+    const diff = Math.round((target - todayMid) / 86400000);
+    return diff;
+  }
+
+  function stampCard(ev){
+    const withDate = !!ev.date;
+    let days = withDate ? daysUntil(ev.date) : null;
+    const done = withDate && days < 0;
+    const urgent = withDate && days >= 0 && days <= 7;
+
+    const card = document.createElement('div');
+    card.className = 'card' + (done ? ' done' : '') + (urgent ? ' urgent' : '') + (!withDate ? ' tbc-card' : '');
+
+    let stampInner;
+    if(!withDate){
+      stampInner = `<div class="n">?</div><div class="u">s/f</div>`;
+    } else if(done){
+      stampInner = `<div class="n">✓</div><div class="u">rendida</div>`;
+    } else if(days === 0){
+      stampInner = `<div class="n">HOY</div>`;
+    } else {
+      stampInner = `<div class="n">${days}</div><div class="u">día${days===1?'':'s'}</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-main">
+        <div class="ramo">${ev.ramo}</div>
+        <div class="tipo">${ev.tipo}</div>
+        ${withDate ? `<div class="fecha">${fmt(ev.date)}</div>` : `<div class="nota">Fecha no indicada en el syllabus</div>`}
+      </div>
+      <div class="stamp">${stampInner}</div>
+    `;
+    return {card, days, done, withDate};
+  }
+
+  const upcomingEl = document.getElementById('upcoming');
+  const pastEl = document.getElementById('past');
+  const tbcEl = document.getElementById('tbc');
+
+  const withDates = events.filter(e => e.date).sort((a,b) => new Date(a.date) - new Date(b.date));
+  const withoutDates = events.filter(e => !e.date);
+
+  let upcomingCount = 0, pastCount = 0;
+
+  withDates.forEach(ev => {
+    const {card, done} = stampCard(ev);
+    if(done){ pastEl.appendChild(card); pastCount++; }
+    else { upcomingEl.appendChild(card); upcomingCount++; }
+  });
+
+  withoutDates.forEach(ev => {
+    const {card} = stampCard(ev);
+    tbcEl.appendChild(card);
+  });
+
+  if(pastCount > 0) document.getElementById('past-label').style.display = 'flex';
+  if(withoutDates.length > 0) document.getElementById('tbc-label').style.display = 'flex';
+
+  const now = new Date();
+  const opts = {weekday:'long', day:'numeric', month:'long', year:'numeric'};
+  document.getElementById('today-line').textContent = 'Hoy · ' + now.toLocaleDateString('es-CL', opts);
+  document.getElementById('count-line').textContent = upcomingCount + ' por venir';
+</script>
+</body>
+</html>
